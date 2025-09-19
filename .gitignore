@@ -1,0 +1,77 @@
+# Compiled binaries and object files
+*.o
+*.obj
+*.exe
+*.dll
+*.so
+*.a
+*.lib
+
+# Intermediate build files
+*.ilk
+*.pdb
+*.exp
+*.idb
+*.ipch
+*.pch
+*.sbr
+*.bsc
+*.res
+*.aps
+*.ncb
+*.opendb
+*.opensdf
+*.cachefile
+*.VC.db
+
+# Visual Studio specific files
+.vs/
+*.suo
+*.user
+*.vcxproj.user
+*.vcxproj.filters
+*.sln.docstates
+ipch/
+
+# CMake specific files
+CMakeCache.txt
+CMakeFiles/
+cmake_install.cmake
+install_manifest.txt
+CTestTestfile.cmake
+_CPack_Packages/
+DartConfiguration.tcl
+Testing/
+
+# Xcode specific files
+build/
+*.pbxuser
+*.xcuserdatad
+*.mode1v3
+*.perspectivev3
+*.xcworkspace
+xcuserdata/
+
+# Eclipse specific files
+.project
+.cproject
+.settings/
+
+# Other common IDE/editor files
+*.bak
+*~
+*.swp
+.DS_Store
+Thumbs.db
+
+# Dependencies (if not managed by a package manager and committed)
+# Uncomment and adjust if you are not committing external libraries
+# libraries/
+# external/
+
+# Log files
+*.log
+
+# Temporary files
+tmp/
+temp/
