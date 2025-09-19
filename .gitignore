@@ -71,7 +71,7 @@ Thumbs.db
 
 # Log files
 *.log
-
+*.vscode
 # Temporary files
 tmp/
 temp/
