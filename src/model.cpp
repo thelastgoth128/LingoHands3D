@@ -125,78 +125,107 @@ if (textures.empty()) {
  return Mesh(vertices, indices, textures);
 }
 
+void Model::ExtractBoneWeightForVertices(std::vector<Vertex>& vertices, aiMesh* mesh, const aiScene* scene) {
+    for (unsigned int boneIndex = 0; boneIndex < mesh->mNumBones; ++boneIndex) {
+        std::string boneName = mesh->mBones[boneIndex]->mName.C_Str();
+        int boneID = -1;
 
-vector<Texture> Model::loadMaterialTextures(aiMaterial *mat,aiTextureType type,string typeName, const aiScene* scene)
- {
-std::cout<<"getting texture diffuse" << endl;
- vector<Texture>textures;
- for(unsigned int i=0; i < mat->GetTextureCount(type);i++)
- {
- aiString str;
- mat->GetTexture(type, i, &str);
- bool skip = false;
- for(unsigned int j = 0; j < textures_loaded.size();j++)
- {
- if(std::strcmp(textures_loaded[j].path.data(),
- str.C_Str())==0)
- {
- textures.push_back(textures_loaded[j]);
- skip=true;
- break;
- }
- }
- if(!skip)
- {//iftexturehasn’tbeenloadedalready,loadit
-std::cout<<"Getting texture from embedded" << endl;
-std::cout << "[TextureLoader] Attempting to load texture: " << str.C_Str() << " of type: " << typeName << std::endl;
-}
-
- if (mat->GetTexture(type, i, &str) == AI_SUCCESS) {
-   const aiTexture* embeddedTex = scene->GetEmbeddedTexture(str.C_Str());
-
-   if (embeddedTex) {
-    std::cout << "[TextureLoader] Embedded texture found: " << str.C_Str() << std::endl;
-} else {
-    std::cerr << "[TextureLoader] Embedded texture NOT found for: " << str.C_Str() << std::endl;
-}
-
-   if (embeddedTex) {
-      std::cout << "[TextureLoader] Embedded texture found: " << str.C_Str() << std::endl;
-        try {
-            Texture texture;
-            texture.id = TextureLoader::TextureFromEmbedded(embeddedTex);
-            texture.type = typeName;
-            texture.path = str.C_Str();
-            textures.push_back(texture);
-            textures_loaded.push_back(texture);
-            continue; // skip file-based loading
-        } catch (...) {
-            std::cerr << "[TextureLoader] Failed to load embedded texture: " << str.C_Str() << std::endl;
+        if (m_BoneInfoMap.find(boneName) == m_BoneInfoMap.end()) {
+            BoneInfo newBoneInfo;
+            newBoneInfo.id = m_BoneCounter;
+            
+            // Convert matrix
+            aiMatrix4x4 offset = mesh->mBones[boneIndex]->mOffsetMatrix;
+            newBoneInfo.offset = glm::mat4(
+                offset.a1, offset.b1, offset.c1, offset.d1,
+                offset.a2, offset.b2, offset.c2, offset.d2,
+                offset.a3, offset.b3, offset.c3, offset.d3,
+                offset.a4, offset.b4, offset.c4, offset.d4
+            );
+            
+            m_BoneInfoMap[boneName] = newBoneInfo;
+            boneID = m_BoneCounter++;
+        } else {
+            boneID = m_BoneInfoMap[boneName].id;
         }
-   }
-   std::cout << "[TextureLoader] Trying external texture: " << str.C_Str() << std::endl;
-    try {
-        Texture texture;
-        texture.id = TextureLoader::TextureFromFile(str.C_Str(), directory);
-        texture.type = typeName;
-        texture.path = str.C_Str();
-        textures.push_back(texture);
-        textures_loaded.push_back(texture);
-        std::cout << "Done loading texture" << endl;
-    } catch (...) {
-        std::cerr << "[TextureLoader] Failed to load external texture: " << str.C_Str() << std::endl;
+
+        assert(boneID != -1);
+
+        for (unsigned int weightIndex = 0; weightIndex < mesh->mBones[boneIndex]->mNumWeights; ++weightIndex) {
+            int vertexID = mesh->mBones[boneIndex]->mWeights[weightIndex].mVertexId;
+            float weight = mesh->mBones[boneIndex]->mWeights[weightIndex].mWeight;
+            assert(vertexID < vertices.size());
+            
+            // Find empty slot and assign bone data
+            for (int i = 0; i < MAX_BONE_WEIGHTS; ++i) {
+                if (vertices[vertexID].m_BoneIDs[i] < 0) {
+                    vertices[vertexID].m_BoneIDs[i] = boneID;
+                    vertices[vertexID].m_Weights[i] = weight;
+                    break;
+                }
+            }
+        }
     }
- }
- }
- if (textures.empty()) {
-    std::cout << "[TextureLoader] No textures found. Injecting fallback.\n";
-    Texture fallback;
-    fallback.id = TextureLoader::TextureFromFile("C:/Users/HP/OneDrive/Documentos/Cyrus/Projects/model_loading/src/Textures/source/684c0f35-ba0b-48e0-ab19-db572ea748d3.glb", directory);
-    fallback.type = typeName;
-    fallback.path = "C:/Users/HP/OneDrive/Documentos/Cyrus/Projects/model_loading/src/Textures/source/684c0f35-ba0b-48e0-ab19-db572ea748d3.glb";
-    textures.push_back(fallback);
-    textures_loaded.push_back(fallback);
 }
+std::vector<Texture> Model::loadMaterialTextures(aiMaterial* mat, aiTextureType type, const std::string& typeName, const aiScene* scene) {
+    std::vector<Texture> textures;
+
+    for (unsigned int i = 0; i < mat->GetTextureCount(type); ++i) {
+        aiString str;
+        mat->GetTexture(type, i, &str);
+
+        // Check if already loaded
+        bool skip = false;
+        for (auto& loaded : textures_loaded) {
+            if (std::strcmp(loaded.path.c_str(), str.C_Str()) == 0) {
+                textures.push_back(loaded);
+                skip = true;
+                break;
+            }
+        }
+
+        if (!skip) {
+            Texture texture;
+            
+            // First, try to load embedded texture
+            const aiTexture* embeddedTex = scene->GetEmbeddedTexture(str.C_Str());
+            
+            if (embeddedTex) {
+                std::cout << "[Texture] Loading embedded texture: " << str.C_Str() << "\n";
+                texture.id = TextureLoader::TextureFromEmbedded(embeddedTex);
+                texture.type = typeName;
+                texture.path = str.C_Str();
+                textures.push_back(texture);
+                textures_loaded.push_back(texture);
+            } else {
+                // Try to load from file system
+                std::cout << "[Texture] Trying to load external texture: " << str.C_Str() << "\n";
+                try {
+                    texture.id = TextureLoader::TextureFromFile(str.C_Str(), directory);
+                    texture.type = typeName;
+                    texture.path = str.C_Str();
+                    textures.push_back(texture);
+                    textures_loaded.push_back(texture);
+                } catch (...) {
+                    std::cout << "[Texture] Failed to load texture: " << str.C_Str() << "\n";
+                    // Don't add failed textures to the list
+                }
+            }
+        }
+    }
+
+    // ONLY add fallback if NO textures were loaded at all
+    if (textures.empty()) {
+        std::cout << "[Texture] No textures loaded, creating fallback...\n";
+        
+        // Create a simple colored texture instead of loading from file
+        Texture fallback;
+        fallback.id = createDefaultTexture(); // We'll implement this
+        fallback.type = typeName;
+        fallback.path = "default_texture";
+        textures.push_back(fallback);
+        textures_loaded.push_back(fallback);
+    }
 
  return textures;
  }
