@@ -18,36 +18,31 @@ public:
         finalBoneMatrices.resize(100, glm::mat4(1.0f));
     }
     
-    void SetBoneRotation(const std::string& boneName, glm::vec3 rotation) {
-        glm::mat4 rotMatrix = glm::mat4(1.0f);
-        rotMatrix = glm::rotate(rotMatrix, glm::radians(rotation.x), glm::vec3(1, 0, 0));
-        rotMatrix = glm::rotate(rotMatrix, glm::radians(rotation.y), glm::vec3(0, 1, 0));
-        rotMatrix = glm::rotate(rotMatrix, glm::radians(rotation.z), glm::vec3(0, 0, 1));
-        
-        manualTransforms[boneName] = rotMatrix;
-        
-        // When rotating arm, also apply some transform to connected bones
-        if (boneName == "RightArm") {
-            // Apply a portion of the arm rotation to the forearm for more natural movement
-            glm::mat4 forearmMatrix = glm::rotate(glm::mat4(1.0f), glm::radians(rotation.x * 0.3f), glm::vec3(1, 0, 0));
-            manualTransforms["RightForeArm"] = forearmMatrix;
-            
-            // Apply smaller rotation to hand
-            glm::mat4 handMatrix = glm::rotate(glm::mat4(1.0f), glm::radians(rotation.x * 0.1f), glm::vec3(1, 0, 0));
-            manualTransforms["RightHand"] = handMatrix;
-        }
-        
-        // Similar for left arm
-        if (boneName == "LeftArm") {
-            glm::mat4 forearmMatrix = glm::rotate(glm::mat4(1.0f), glm::radians(rotation.x * 0.3f), glm::vec3(1, 0, 0));
-            manualTransforms["LeftForeArm"] = forearmMatrix;
-            
-            glm::mat4 handMatrix = glm::rotate(glm::mat4(1.0f), glm::radians(rotation.x * 0.1f), glm::vec3(1, 0, 0));
-            manualTransforms["LeftHand"] = handMatrix;
-        }
-        
-        std::cout << "[Animator] Set rotation for bone: " << boneName << "\n";
+    void SetBoneRotation(const std::string& boneName, glm::quat rotation) {
+    // Directly convert quaternion to rotation matrix
+    glm::mat4 rotMatrix = glm::mat4_cast(rotation);
+    manualTransforms[boneName] = rotMatrix;
+
+    // Apply scaled quaternion rotations to connected bones
+    if (boneName == "RightArm") {
+        glm::quat forearmRot = glm::angleAxis(glm::angle(rotation) * 0.3f, glm::axis(rotation));
+        manualTransforms["RightForeArm"] = glm::mat4_cast(forearmRot);
+
+        glm::quat handRot = glm::angleAxis(glm::angle(rotation) * 0.1f, glm::axis(rotation));
+        manualTransforms["RightHand"] = glm::mat4_cast(handRot);
     }
+
+    if (boneName == "LeftArm") {
+        glm::quat forearmRot = glm::angleAxis(glm::angle(rotation) * 0.3f, glm::axis(rotation));
+        manualTransforms["LeftForeArm"] = glm::mat4_cast(forearmRot);
+
+        glm::quat handRot = glm::angleAxis(glm::angle(rotation) * 0.1f, glm::axis(rotation));
+        manualTransforms["LeftHand"] = glm::mat4_cast(handRot);
+    }
+
+    std::cout << "[Animator] Set rotation for bone: " << boneName << "\n";
+}
+
     
     void ResetAllBones() {
         manualTransforms.clear();

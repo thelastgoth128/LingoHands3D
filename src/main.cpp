@@ -92,27 +92,30 @@ void processInput(GLFWwindow* window) {
         }
     }
 
-    // NEW: Right hand up (single press)
-    if (isKeyJustPressed(GLFW_KEY_U)) {
+    if (isKeyJustPressed(GLFW_KEY_J)) {
         if (animator) {
-            // Raise right arm up (rotate around X-axis)
-            animator->SetBoneRotation("RightArm", glm::vec3(-90.0f, 0.0f, 0.0f));
-            // Also rotate the shoulder slightly for more natural movement
-            animator->SetBoneRotation("RightShoulder", glm::vec3(0.0f, 0.0f, 15.0f));
-            std::cout << "[Input] Right hand raised up\n";
+            // Reset to natural/neutral position (no rotation)
+            animator->SetBoneRotation("RightArm", glm::vec3(0.0f, 0.0f, 0.0f));
+            animator->SetBoneRotation("RightShoulder", glm::vec3(0.0f, 0.0f, 0.0f));
+            animator->SetBoneRotation("RightForeArm", glm::vec3(0.0f, 0.0f, 0.0f));
+            animator->SetBoneRotation("RightHand", glm::vec3(0.0f, 0.0f, 0.0f));
+            std::cout << "[Input] Right hand reset to neutral (down) position\n";
         }
     }
 
-    // NEW: Right hand down (single press)
-    if (isKeyJustPressed(GLFW_KEY_J)) {
-        if (animator) {
-            // Lower right arm down (rotate around X-axis in opposite direction)
-            animator->SetBoneRotation("RightArm", glm::vec3(30.0f, 0.0f, 0.0f));
-            // Reset shoulder
-            animator->SetBoneRotation("RightShoulder", glm::vec3(0.0f, 0.0f, -10.0f));
-            std::cout << "[Input] Right hand lowered down\n";
-        }
+    // Keep your U key the same - it raises from the natural position
+   if (isKeyJustPressed(GLFW_KEY_U)) {
+    if (animator) {
+        // Raise right arm up from natural position using angle-axis quaternions
+        animator->SetBoneRotation("RightShoulder", glm::angleAxis(glm::radians(15.0f), glm::vec3(0, 0, 1))); // slight twist
+        animator->SetBoneRotation("RightArm", glm::angleAxis(glm::radians(-90.0f), glm::vec3(1, 0, 0)));     // lift arm up
+        animator->SetBoneRotation("RightForeArm", glm::angleAxis(glm::radians(-20.0f), glm::vec3(1, 0, 0))); // bend elbow
+        animator->SetBoneRotation("RightHand", glm::angleAxis(glm::radians(-10.0f), glm::vec3(1, 0, 0)));    // tilt wrist
+
+        std::cout << "[Input] Right hand raised up from neutral position\n";
     }
+}
+
 
     // NEW: Right hand wave (continuous - hold key)
    if (glfwGetKey(window, GLFW_KEY_Q) == GLFW_PRESS) {
