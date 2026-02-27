@@ -19,7 +19,32 @@ void Model::loadModel(string path) {
 
     directory = path.substr(0, path.find_last_of('/'));
     processNode(scene->mRootNode, scene);
+    
+    // Build the skeleton hierarchy after the meshes are loaded
+    buildSkeletonHierarchy(m_RootNode, scene->mRootNode);
+    
     std::cout << "[Model] Finished loading.\n";
+}
+
+void Model::buildSkeletonHierarchy(SkeletonNode& dest, const aiNode* src) {
+    if (!src) return;
+    
+    dest.name = src->mName.C_Str();
+    
+    // Extract local transformation matrix from aiNode
+    aiMatrix4x4 t = src->mTransformation;
+    dest.localBindTransform = glm::mat4(
+        t.a1, t.b1, t.c1, t.d1,
+        t.a2, t.b2, t.c2, t.d2,
+        t.a3, t.b3, t.c3, t.d3,
+        t.a4, t.b4, t.c4, t.d4
+    );
+    
+    for (unsigned int i = 0; i < src->mNumChildren; ++i) {
+        SkeletonNode childNode;
+        buildSkeletonHierarchy(childNode, src->mChildren[i]);
+        dest.children.push_back(childNode);
+    }
 }
 
 void Model::processNode(aiNode* node, const aiScene* scene) {
