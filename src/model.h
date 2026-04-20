@@ -14,6 +14,14 @@
 #include "bone_info.h"        // This already defines BoneInfo
 #include "mesh.h"
 #include "texture_loader.h"
+#include <map>
+
+struct SkeletonNode {
+    std::string name;
+    glm::mat4 localBindTransform;
+    std::vector<SkeletonNode> children;
+};
+
 
 using namespace std;
 
@@ -28,6 +36,7 @@ class Model
 private:
     std::map<string, BoneInfo> m_BoneInfoMap;
     int m_BoneCounter = 0;
+    SkeletonNode m_RootNode; // Add this to store the hierarchy
 
     void SetVertexBoneDataToDefault(Vertex& vertex) {
         for (int i = 0; i < MAX_BONE_WEIGHTS; i++) {  // Use MAX_BONE_WEIGHTS instead of AI_MAX_BONE_WEIGHTS
@@ -45,6 +54,10 @@ public:
         return m_BoneCounter;
     }
 
+    const SkeletonNode& GetRootNode() const {
+        return m_RootNode;
+    }
+
     Model(const char *path) {
         loadModel(path);
     }
@@ -59,6 +72,7 @@ private:
     
     void loadModel(string path);
     void processNode(aiNode *node, const aiScene *scene);
+    void buildSkeletonHierarchy(SkeletonNode& dest, const aiNode* src);
     
     // FIX THIS LINE - add template parameter
     void ExtractBoneWeightForVertices(std::vector<Vertex>& vertices, aiMesh* mesh, const aiScene* scene);
