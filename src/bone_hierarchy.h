@@ -128,16 +128,51 @@ public:
             delete node;
         }
     }
-    
-    void SetBoneRotation(const std::string& boneName, glm::vec3 rotation) {
-        glm::mat4 rotMatrix = glm::mat4(1.0f);
-        rotMatrix = glm::rotate(rotMatrix, glm::radians(rotation.x), glm::vec3(1, 0, 0));
-        rotMatrix = glm::rotate(rotMatrix, glm::radians(rotation.y), glm::vec3(0, 1, 0));
-        rotMatrix = glm::rotate(rotMatrix, glm::radians(rotation.z), glm::vec3(0, 0, 1));
-        
-        manualTransforms[boneName] = rotMatrix;
-        std::cout << "[Animator] Set rotation for bone: " << boneName << "\n";
+
+            void PrintBoneHierarchy(BoneNode* node, int depth = 0) {
+    if (!node) return;
+
+    std::string indent(depth * 2, ' ');
+    std::cout << indent << "- " << node->name << "\n";
+
+    for (BoneNode* child : node->children) {
+        PrintBoneHierarchy(child, depth + 1);
     }
+}
+
+
+void PrintHierarchy() {
+    std::cout << "[Animator] Bone Hierarchy:\n";
+    PrintBoneHierarchy(rootBone);
+}
+    
+    void SetBoneRotation(const std::string& boneName, glm::quat rotation) {
+    // Directly convert quaternion to rotation matrix
+    glm::mat4 rotMatrix = glm::mat4_cast(rotation);
+    manualTransforms[boneName] = rotMatrix;
+
+    // Apply scaled quaternion rotations to connected bones
+    if (boneName == "RightArm") {
+        // glm::quat forearmRot = glm::angleAxis(glm::angle(rotation) * 0.3f, glm::axis(rotation));
+        // manualTransforms["RightForeArm"] = glm::mat4_cast(forearmRot);
+
+        glm::quat righthand = glm::angleAxis(glm::angle(rotation) * 0.3f, glm::axis(rotation));
+        manualTransforms["RightHandIndex1"] = glm::mat4_cast(righthand);
+
+        glm::quat handRot = glm::angleAxis(glm::angle(rotation) * 0.1f, glm::axis(rotation));
+        manualTransforms["RightHand"] = glm::mat4_cast(handRot);
+    }
+
+    if (boneName == "LeftArm") {
+        glm::quat forearmRot = glm::angleAxis(glm::angle(rotation) * 0.3f, glm::axis(rotation));
+        manualTransforms["LeftForeArm"] = glm::mat4_cast(forearmRot);
+
+        glm::quat handRot = glm::angleAxis(glm::angle(rotation) * 0.1f, glm::axis(rotation));
+        manualTransforms["LeftHand"] = glm::mat4_cast(handRot);
+    }
+
+    std::cout << "[Animator] Set rotation for bone: " << boneName << "\n";
+}
     
     void ResetAllBones() {
         manualTransforms.clear();

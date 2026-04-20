@@ -8,6 +8,7 @@
 struct BoneInfo {
     int id;
     glm::mat4 offset;
+    glm::mat4 localBindTransform;
 };
 
 // If you want to keep vertex data separate, you can also create a separate Vertex header
