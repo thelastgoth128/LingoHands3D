@@ -1,0 +1,23 @@
+# LingoHands Animation File - hello
+# Format: BONE_NAME X_ROT Y_ROT Z_ROT
+# Rotations are in degrees, applied as quaternions
+# Lines starting with # are comments
+
+RightArm 0.0 0.0 -80.0
+RightForeArm 100.0 0.0 0.0
+RightHand 0.0 15.0 0.0
+RightHandThumb1 0.0 0.0 0.0
+RightHandThumb2 0.0 0.0 0.0
+RightHandThumb3 0.0 0.0 0.0
+RightHandIndex1 0.0 0.0 0.0
+RightHandIndex2 0.0 0.0 0.0
+RightHandIndex3 0.0 0.0 0.0
+RightHandMiddle1 0.0 0.0 0.0
+RightHandMiddle2 0.0 0.0 0.0
+RightHandMiddle3 0.0 0.0 0.0
+RightHandRing1 0.0 0.0 0.0
+RightHandRing2 0.0 0.0 0.0
+RightHandRing3 0.0 0.0 0.0
+RightHandPinky1 0.0 0.0 0.0
+RightHandPinky2 0.0 0.0 0.0
+RightHandPinky3 0.0 0.0 0.0

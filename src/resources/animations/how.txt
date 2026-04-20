@@ -1,0 +1,49 @@
+# LingoHands Animation File - how
+# ASL "HOW": Both hands at chest/stomach level, fists clenched, thumbs up.
+# Peak pose.
+
+# Right Arm (Chest/Stomach level, angled forward)
+RightShoulder 0.0 0.0 -10.0
+RightArm -60.0 0.0 -20.0
+RightForeArm 90.0 0.0 0.0
+RightHand 0.0 -30.0 0.0
+
+# Right Hand (Fist, Thumb UP)
+RightHandThumb1 0.0 0.0 0.0
+RightHandThumb2 0.0 0.0 0.0
+RightHandThumb3 0.0 0.0 0.0
+RightHandIndex1 90.0 0.0 0.0
+RightHandIndex2 90.0 0.0 0.0
+RightHandIndex3 90.0 0.0 0.0
+RightHandMiddle1 90.0 0.0 0.0
+RightHandMiddle2 90.0 0.0 0.0
+RightHandMiddle3 90.0 0.0 0.0
+RightHandRing1 90.0 0.0 0.0
+RightHandRing2 90.0 0.0 0.0
+RightHandRing3 90.0 0.0 0.0
+RightHandPinky1 90.0 0.0 0.0
+RightHandPinky2 90.0 0.0 0.0
+RightHandPinky3 90.0 0.0 0.0
+
+# Left Arm (Mirrors right)
+LeftShoulder 0.0 0.0 10.0
+LeftArm -60.0 0.0 20.0
+LeftForeArm 90.0 0.0 0.0
+LeftHand 0.0 30.0 0.0
+
+# Left Hand (Fist, Thumb UP)
+LeftHandThumb1 0.0 0.0 0.0
+LeftHandThumb2 0.0 0.0 0.0
+LeftHandThumb3 0.0 0.0 0.0
+LeftHandIndex1 90.0 0.0 0.0
+LeftHandIndex2 90.0 0.0 0.0
+LeftHandIndex3 90.0 0.0 0.0
+LeftHandMiddle1 90.0 0.0 0.0
+LeftHandMiddle2 90.0 0.0 0.0
+LeftHandMiddle3 90.0 0.0 0.0
+LeftHandRing1 90.0 0.0 0.0
+LeftHandRing2 90.0 0.0 0.0
+LeftHandRing3 90.0 0.0 0.0
+LeftHandPinky1 90.0 0.0 0.0
+LeftHandPinky2 90.0 0.0 0.0
+LeftHandPinky3 90.0 0.0 0.0

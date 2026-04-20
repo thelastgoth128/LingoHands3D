@@ -1,0 +1,3 @@
+RightArm 100.0 0.0 0.0
+RightForeArm 0.0 0.0 100.0
+RightHand 0.0 15.0 0.0

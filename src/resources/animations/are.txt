@@ -1,0 +1,30 @@
+# LingoHands Animation File - are
+# ASL "ARE": Index pointed, rest of fingers folded. Arm moves up to left shoulder.
+# Peak pose.
+
+# Right arm - Pointed across body to left shoulder
+RightShoulder -20.0 -30.0 -10.0
+RightArm -70.0 -50.0 0.0
+RightForeArm 120.0 0.0 0.0
+RightHand 0.0 0.0 -20.0
+
+# Right Hand (Index pointing, others folded)
+RightHandThumb1 30.0 -30.0 0.0
+RightHandThumb2 20.0 0.0 0.0
+RightHandThumb3 10.0 0.0 0.0
+
+RightHandIndex1 0.0 0.0 0.0
+RightHandIndex2 0.0 0.0 0.0
+RightHandIndex3 0.0 0.0 0.0
+
+RightHandMiddle1 90.0 0.0 0.0
+RightHandMiddle2 90.0 0.0 0.0
+RightHandMiddle3 90.0 0.0 0.0
+
+RightHandRing1 90.0 0.0 0.0
+RightHandRing2 90.0 0.0 0.0
+RightHandRing3 90.0 0.0 0.0
+
+RightHandPinky1 90.0 0.0 0.0
+RightHandPinky2 90.0 0.0 0.0
+RightHandPinky3 90.0 0.0 0.0
