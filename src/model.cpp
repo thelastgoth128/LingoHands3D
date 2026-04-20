@@ -136,12 +136,41 @@ void Model::ExtractBoneWeightForVertices(std::vector<Vertex>& vertices, aiMesh* 
             float weight = mesh->mBones[boneIndex]->mWeights[weightIndex].mWeight;
             assert(vertexID < vertices.size());
             
+            // Bone ID validation against the current shader limit
+            if (boneID >= 200) {
+                static bool warned = false;
+                if (!warned) {
+                    std::cerr << "WARNING::MODEL::BONE_ID_LIMIT_EXCEEDED: Bone ID " << boneID 
+                              << " exceeds shader limit of 200. Vertices will stay at bind pose.\n";
+                    warned = true;
+                }
+                continue;
+            }
+
             // Find empty slot and assign bone data
             for (int i = 0; i < MAX_BONE_WEIGHTS; ++i) {
                 if (vertices[vertexID].m_BoneIDs[i] < 0) {
                     vertices[vertexID].m_BoneIDs[i] = boneID;
                     vertices[vertexID].m_Weights[i] = weight;
                     break;
+                }
+            }
+        }
+    }
+
+    // Weight Normalization: Ensure all vertex weights sum up to 1.0
+    for (size_t i = 0; i < vertices.size(); i++) {
+        float totalWeight = 0.0f;
+        for (int j = 0; j < MAX_BONE_WEIGHTS; j++) {
+            if (vertices[i].m_BoneIDs[j] != -1) {
+                totalWeight += vertices[i].m_Weights[j];
+            }
+        }
+
+        if (totalWeight > 0.0f && std::abs(totalWeight - 1.0f) > 0.0001f) {
+            for (int j = 0; j < MAX_BONE_WEIGHTS; j++) {
+                if (vertices[i].m_BoneIDs[j] != -1) {
+                    vertices[i].m_Weights[j] /= totalWeight;
                 }
             }
         }
