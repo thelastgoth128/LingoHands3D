@@ -144,6 +144,14 @@ glm::vec3 cameraPos = glm::vec3(0.0f, 0.0f, 3.0f);
 glm::vec3 cameraFront = glm::vec3(0.0f, 0.0f, -1.0f);
 glm::vec3 cameraUp = glm::vec3(0.0f, 1.0f, 0.0f);
 
+// Mouse state for camera control
+float lastX = 400.0f;
+float lastY = 300.0f;
+float yaw   = -90.0f;
+float pitch = 0.0f;
+bool firstMouse = true;
+
+
 float deltaTime = 0.0f;
 float lastFrame = 0.0f;
 
@@ -398,10 +406,6 @@ void processInput(GLFWwindow* window) {
     }
 }
 
-// Keep your existing mouse callback
-float lastX = 400, lastY = 300;
-float yaw = -90.0f, pitch = 0.0f;
-bool firstMouse = true;
 
 void mouse_callback(GLFWwindow* window, double xpos, double ypos) {
     if (firstMouse) {
